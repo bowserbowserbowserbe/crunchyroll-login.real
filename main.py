@@ -9,7 +9,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # puoi restringere questo
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -23,15 +23,21 @@ class LoginRequest(BaseModel):
 async def login(data: LoginRequest):
     try:
         session = await Crunchyroll.login(data.email, data.password)
-        return {
-            "success": True,
-            "username": session.user.name
-        }
+        return JSONResponse(
+            content={
+                "success": True,
+                "username": session.user.name
+            },
+            status_code=200
+        )
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return JSONResponse(
+            content={
+                "success": False,
+                "error": str(e)
+            },
+            status_code=200
+        )
 
 if __name__ == "__main__":
     import os
