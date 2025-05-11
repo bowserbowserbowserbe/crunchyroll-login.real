@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from fastapi.responses import JSONResponse
+from fastapi.responses import Response
 from crunchyroll import Crunchyroll
 import uvicorn
+import json
 
 app = FastAPI()
 
@@ -23,20 +24,20 @@ class LoginRequest(BaseModel):
 async def login(data: LoginRequest):
     try:
         session = await Crunchyroll.login(data.email, data.password)
-        return JSONResponse(
-            content={
+        return Response(
+            content=json.dumps({
                 "success": True,
                 "username": session.user.name
-            },
-            status_code=200
+            }),
+            media_type="application/json"
         )
     except Exception as e:
-        return JSONResponse(
-            content={
+        return Response(
+            content=json.dumps({
                 "success": False,
                 "error": str(e)
-            },
-            status_code=200
+            }),
+            media_type="application/json"
         )
 
 if __name__ == "__main__":
